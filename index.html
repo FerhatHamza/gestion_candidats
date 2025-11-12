@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Medical Institute | Loading</title>
+  <style>
+    /* Reset */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #e6f2ff, #f9ffff);
+      font-family: 'Tajawal', sans-serif;
+    }
+
+    .loader-container {
+      text-align: center;
+      animation: fadeIn 1.2s ease-in-out;
+    }
+
+    .logo {
+      width: 90px;
+      height: 90px;
+      margin-bottom: 20px;
+      border-radius: 50%;
+      background: url('logo.png') center/cover no-repeat;
+      box-shadow: 0 0 15px rgba(0, 100, 200, 0.2);
+    }
+
+    .spinner {
+      width: 60px;
+      height: 60px;
+      border: 6px solid #cce0ff;
+      border-top: 6px solid #007bff;
+      border-radius: 50%;
+      margin: 0 auto 25px;
+      animation: spin 1s linear infinite;
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      color: #004080;
+      margin-bottom: 10px;
+    }
+
+    p {
+      color: #336699;
+      font-size: 0.95rem;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Optional fade-out animation when loading completes */
+    .fade-out {
+      opacity: 0;
+      transition: opacity 0.8s ease;
+    }
+  </style>
+</head>
+<body>
+  <div class="loader-container" id="loader">
+    <div class="logo"></div>
+    <div class="spinner"></div>
+    <h1>Welcome to EPH Berriane</h1>
+    <p>Loading medical system...</p>
+  </div>
+
+  <script>
+    // Simulate loading completion
+    window.addEventListener("load", () => {
+      const loader = document.getElementById("loader");
+      setTimeout(() => {
+        loader.classList.add("fade-out");
+        setTimeout(() => {
+          window.location.href = "home.html"; // redirect to your main page
+        }, 800);
+      }, 2000); // duration of loading (2 seconds)
+    });
+  </script>
+</body>
+</html>
