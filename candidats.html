@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>إدارة المترشحين</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      body {
+        font-family: "Tajawal", "Cairo", sans-serif;
+      }
+    </style>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+
+  <body class="bg-gray-100 text-gray-800">
+    <!-- ✅ شريط علوي -->
+    <header
+      class="bg-gradient-to-l from-blue-800 to-blue-600 text-white shadow-lg"
+    >
+      <div
+        class="max-w-6xl mx-auto flex justify-between items-center py-4 px-6"
+      >
+        <h1 class="text-2xl font-bold flex items-center gap-2">
+          🧾 نظام إدارة المترشحين
+        </h1>
+        <nav class="flex gap-6 text-lg">
+          <a
+            href="candidats.html"
+            class="font-semibold border-b-2 border-white pb-1"
+            >المترشحون</a
+          >
+          <a href="agents.html" class="hover:text-blue-200">المستخدمون</a>
+        </nav>
+      </div>
+    </header>
+
+    <!-- ✅ المحتوى الرئيسي -->
+    <main class="max-w-6xl mx-auto mt-10">
+      <div class="flex justify-between mb-6">
+        <h2 class="text-2xl font-semibold text-gray-700">📋 قائمة المترشحين</h2>
+        <!-- زر فتح النموذج -->
+        <label
+          for="add-modal"
+          class="bg-blue-600 text-white px-5 py-2 rounded-lg cursor-pointer shadow hover:bg-blue-700 transition"
+        >
+          ➕ إضافة مترشح
+        </label>
+      </div>
+
+      <!-- ✅ جدول المترشحين -->
+      <div
+        class="bg-white rounded-xl shadow-md overflow-x-auto border border-gray-200"
+      >
+        <table class="w-full text-sm">
+          <thead class="bg-blue-600 text-white">
+            <tr>
+              <th class="px-4 py-3 text-right">الاسم</th>
+              <th class="px-4 py-3 text-right">اللقب</th>
+              <th class="px-4 py-3 text-right">الجنس</th>
+              <th class="px-4 py-3 text-right">رقم الهاتف</th>
+              <th class="px-4 py-3 text-right">الوثائق المرفقة</th>
+              <th class="px-4 py-3 text-center">الإجراءات</th>
+            </tr>
+          </thead>
+          <tbody id="candidatesTableBody" class="divide-y divide-gray-100">
+            <!-- سيتم ملء الجدول لاحقاً عبر JS -->
+          </tbody>
+        </table>
+      </div>
+    </main>
+
+    <!-- ✅ نموذج إضافة مترشح (Modal) -->
+    <input type="checkbox" id="add-modal" class="hidden peer" />
+    <div
+      class="fixed inset-0 bg-black/40 hidden peer-checked:flex items-center justify-center z-50"
+    >
+      <div
+        class="bg-white w-full max-w-3xl rounded-2xl shadow-xl p-6 relative border border-gray-200"
+      >
+        <label
+          for="add-modal"
+          class="absolute top-3 right-4 text-gray-500 hover:text-red-600 cursor-pointer text-2xl"
+          >&times;</label
+        >
+
+        <h3 class="text-xl font-semibold mb-4 text-gray-700 border-b pb-2">
+          🧍‍♂️ إضافة مترشح جديد
+        </h3>
+
+        <form class="grid grid-cols-2 gap-4">
+          <!-- الاسم -->
+          <div class="flex flex-col">
+            <label for="firstName" class="mb-1 font-medium text-gray-700"
+              >الاسم</label
+            >
+            <input
+              id="firstName"
+              type="text"
+              class="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-400 outline-none"
+            />
+          </div>
+
+          <!-- اللقب -->
+          <div class="flex flex-col">
+            <label for="lastName" class="mb-1 font-medium text-gray-700"
+              >اللقب</label
+            >
+            <input
+              id="lastName"
+              type="text"
+              class="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-400 outline-none"
+            />
+          </div>
+
+          <!-- الجنس -->
+          <div class="flex flex-col">
+            <label for="sex" class="mb-1 font-medium text-gray-700"
+              >الجنس</label
+            >
+            <select
+              id="sex"
+              class="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-400 outline-none"
+            >
+              <option value="">-- اختر --</option>
+              <option>ذكر</option>
+              <option>أنثى</option>
+            </select>
+          </div>
+
+          <!-- تاريخ الميلاد -->
+          <div class="flex flex-col">
+            <label for="birthDate" class="mb-1 font-medium text-gray-700"
+              >تاريخ الميلاد</label
+            >
+            <input
+              id="birthDate"
+              type="date"
+              class="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-400 outline-none"
+            />
+          </div>
+
+          <!-- مكان الميلاد -->
+          <div class="flex flex-col">
+            <label for="placeOfBirth" class="mb-1 font-medium text-gray-700"
+              >مكان الميلاد</label
+            >
+            <input
+              id="placeOfBirth"
+              type="text"
+              class="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-400 outline-none"
+            />
+          </div>
+
+          <!-- الهاتف -->
+          <div class="flex flex-col">
+            <label for="phone" class="mb-1 font-medium text-gray-700"
+              >رقم الهاتف</label
+            >
+            <input
+              id="phone"
+              type="tel"
+              class="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-400 outline-none"
+            />
+          </div>
+
+          <!-- البريد الإلكتروني -->
+          <div class="col-span-2 flex flex-col">
+            <label for="email" class="mb-1 font-medium text-gray-700"
+              >البريد الإلكتروني</label
+            >
+            <input
+              id="email"
+              type="email"
+              class="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-400 outline-none"
+            />
+          </div>
+
+          <!-- الحالة العائلية -->
+          <div class="flex flex-col">
+            <label for="familySituation" class="mb-1 font-medium text-gray-700"
+              >الحالة العائلية</label
+            >
+            <select
+              id="familySituation"
+              class="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-400 outline-none"
+            >
+              <option value="">-- اختر --</option>
+              <option>أعزب</option>
+              <option>متزوج</option>
+              <option>مطلق</option>
+              <option>أرمل</option>
+            </select>
+          </div>
+
+          <!-- عدد الأطفال -->
+          <div class="flex flex-col">
+            <label for="numberOfChildren" class="mb-1 font-medium text-gray-700"
+              >عدد الأطفال</label
+            >
+            <input
+              id="numberOfChildren"
+              type="number"
+              min="0"
+              class="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-400 outline-none"
+            />
+          </div>
+
+          <!-- العنوان -->
+          <div class="col-span-2 flex flex-col">
+            <label for="addressLine" class="mb-1 font-medium text-gray-700"
+              >العنوان الكامل</label
+            >
+            <textarea
+              id="addressLine"
+              class="border rounded-lg px-3 py-2 h-24 resize-none focus:ring-2 focus:ring-blue-400 outline-none"
+            ></textarea>
+          </div>
+
+          <!-- 📁 الوثائق المرفقة -->
+          <div class="col-span-2 mt-6 border-t pt-4">
+            <h4 class="text-lg font-semibold text-gray-700 mb-2">
+              📎 الوثائق المقدمة
+            </h4>
+            <div
+              class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-sm text-gray-700"
+            >
+              <label class="flex items-center gap-2"
+                ><input type="checkbox" id="demande_ecrite" /> طلب خطي</label
+              >
+              <label class="flex items-center gap-2"
+                ><input type="checkbox" id="copyOfID" /> نسخة من بطاقة
+                الهوية</label
+              >
+              <label class="flex items-center gap-2"
+                ><input type="checkbox" id="diplome" /> الشهادة</label
+              >
+              <label class="flex items-center gap-2"
+                ><input type="checkbox" id="releve_notes" /> كشف النقاط</label
+              >
+              <label class="flex items-center gap-2"
+                ><input type="checkbox" id="certificat_service" /> شهادة
+                الخدمة</label
+              >
+              <label class="flex items-center gap-2"
+                ><input type="checkbox" id="photos" /> صور شمسية</label
+              >
+              <label class="flex items-center gap-2"
+                ><input type="checkbox" id="enveloppes" /> أظرفة</label
+              >
+              <label class="flex items-center gap-2"
+                ><input type="checkbox" id="attestations_travail" /> شهادات
+                العمل</label
+              >
+            </div>
+
+            <div class="mt-3">
+              <label
+                for="autres_pieces"
+                class="block text-sm text-gray-700 mb-1"
+                >وثائق أخرى (إن وجدت)</label
+              >
+              <textarea
+                id="autres_pieces"
+                class="border rounded-lg px-3 py-2 w-full h-20 resize-none focus:ring-2 focus:ring-blue-400 outline-none"
+              ></textarea>
+            </div>
+          </div>
+
+          <!-- زر الحفظ -->
+          <div class="col-span-2 text-left mt-4">
+            <button
+              type="button"
+              id="saveCandidateBtn"
+              class="bg-green-600 text-white px-6 py-2 rounded-lg shadow hover:bg-green-700 transition"
+            >
+              💾 حفظ المترشح
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- ✅ تذييل -->
+    <footer class="text-center text-gray-500 text-sm py-6 mt-10">
+      © 2025 - نظام إدارة المترشحين
+    </footer>
+
+    <script type="module" src="./js/condidate.js"></script>
+  </body>
+</html>
