@@ -13,16 +13,16 @@ export async function getDocumentsById(id) {
 
 export async function addDocuments(DocumentseData) {
     return await apiRequest("/documents", "POST", {
-        firstName: DocumentseData.firstName,
-        lastName: DocumentseData.lastName,
-        sex: DocumentseData.sex,
-        birthDate: DocumentseData.birthDate,
-        placeOfBirth: DocumentseData.placeOfBirth,
-        addressLine: DocumentseData.addressLine,
-        phone: DocumentseData.phone,
-        email: DocumentseData.email,
-        familySituation: DocumentseData.familySituation,
-        numberOfChildren: DocumentseData.numberOfChildren,
+        candidate_id: DocumentseData.candidate_id,
+        demande_ecrite: DocumentseData.demande_ecrite,
+        copyOfID: DocumentseData.copyOfID,
+        diplome: DocumentseData.diplome,
+        releve_notes: DocumentseData.releve_notes,
+        certificat_service: DocumentseData.certificat_service,
+        photos: DocumentseData.photos,
+        enveloppes: DocumentseData.enveloppes,
+        attestations_travail: DocumentseData.attestations_travail,
+        autres_pieces: DocumentseData.autres_pieces
     });
 }
 

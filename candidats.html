@@ -17,7 +17,7 @@
   </head>
 
   <body class="bg-gray-100 text-gray-800">
-    <!-- ✅ شريط علوي -->
+    <!-- شريط علوي -->
     <header
       class="bg-gradient-to-l from-blue-800 to-blue-600 text-white shadow-lg"
     >
@@ -38,20 +38,19 @@
       </div>
     </header>
 
-    <!-- ✅ المحتوى الرئيسي -->
-    <main class="max-w-6xl mx-auto mt-10">
-      <div class="flex justify-between mb-6">
+    <!-- المحتوى الرئيسي -->
+    <main class="max-w-6xl mx-auto mt-10 px-4">
+      <div class="flex justify-between mb-6 items-center">
         <h2 class="text-2xl font-semibold text-gray-700">📋 قائمة المترشحين</h2>
-        <!-- زر فتح النموذج -->
-        <label
-          for="add-modal"
+        <button
+          id="btnAdd"
           class="bg-blue-600 text-white px-5 py-2 rounded-lg cursor-pointer shadow hover:bg-blue-700 transition"
         >
           ➕ إضافة مترشح
-        </label>
+        </button>
       </div>
 
-      <!-- ✅ جدول المترشحين -->
+      <!-- جدول المترشحين -->
       <div
         class="bg-white rounded-xl shadow-md overflow-x-auto border border-gray-200"
       >
@@ -62,229 +61,206 @@
               <th class="px-4 py-3 text-right">اللقب</th>
               <th class="px-4 py-3 text-right">الجنس</th>
               <th class="px-4 py-3 text-right">رقم الهاتف</th>
-              <th class="px-4 py-3 text-right">الوثائق المرفقة</th>
+              <th class="px-4 py-3 text-right">الوثائق الناقصة</th>
               <th class="px-4 py-3 text-center">الإجراءات</th>
             </tr>
           </thead>
           <tbody id="candidatesTableBody" class="divide-y divide-gray-100">
-            <!-- سيتم ملء الجدول لاحقاً عبر JS -->
+            <!-- سيتم ملء الجدول عبر JS -->
           </tbody>
         </table>
       </div>
     </main>
 
-    <!-- ✅ نموذج إضافة مترشح (Modal) -->
-    <input type="checkbox" id="add-modal" class="hidden peer" />
-    <div
-      class="fixed inset-0 bg-black/40 hidden peer-checked:flex items-center justify-center z-50"
-    >
+    <!-- Modal (مغلق افتراضياً) -->
+    <div id="modelAddEdit" class="fixed inset-0 z-50 hidden">
+      <!-- overlay -->
+      <div id="modalOverlay" class="absolute inset-0 bg-black/40"></div>
+
+      <!-- dialog -->
       <div
-        class="bg-white w-full max-w-3xl rounded-2xl shadow-xl p-6 relative border border-gray-200"
+        class="relative max-w-3xl mx-auto mt-14 bg-white rounded-2xl shadow-xl p-6 border border-gray-200 z-10"
       >
-        <label
-          for="add-modal"
-          class="absolute top-3 right-4 text-gray-500 hover:text-red-600 cursor-pointer text-2xl"
-          >&times;</label
+        <button
+          id="closeModal"
+          class="absolute left-4 top-4 text-gray-500 hover:text-red-600 text-2xl"
         >
+          &times;
+        </button>
 
         <h3 class="text-xl font-semibold mb-4 text-gray-700 border-b pb-2">
-          🧍‍♂️ إضافة مترشح جديد
+          🧍‍♂️ إضافة / تعديل مترشح
         </h3>
 
-        <form class="grid grid-cols-2 gap-4">
-          <!-- الاسم -->
-          <div class="flex flex-col">
-            <label for="firstName" class="mb-1 font-medium text-gray-700"
-              >الاسم</label
-            >
-            <input
-              id="firstName"
-              type="text"
-              class="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-400 outline-none"
-            />
-          </div>
-
-          <!-- اللقب -->
-          <div class="flex flex-col">
-            <label for="lastName" class="mb-1 font-medium text-gray-700"
-              >اللقب</label
-            >
-            <input
-              id="lastName"
-              type="text"
-              class="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-400 outline-none"
-            />
-          </div>
-
-          <!-- الجنس -->
-          <div class="flex flex-col">
-            <label for="sex" class="mb-1 font-medium text-gray-700"
-              >الجنس</label
-            >
-            <select
-              id="sex"
-              class="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-400 outline-none"
-            >
-              <option value="">-- اختر --</option>
-              <option>ذكر</option>
-              <option>أنثى</option>
-            </select>
-          </div>
-
-          <!-- تاريخ الميلاد -->
-          <div class="flex flex-col">
-            <label for="birthDate" class="mb-1 font-medium text-gray-700"
-              >تاريخ الميلاد</label
-            >
-            <input
-              id="birthDate"
-              type="date"
-              class="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-400 outline-none"
-            />
-          </div>
-
-          <!-- مكان الميلاد -->
-          <div class="flex flex-col">
-            <label for="placeOfBirth" class="mb-1 font-medium text-gray-700"
-              >مكان الميلاد</label
-            >
-            <input
-              id="placeOfBirth"
-              type="text"
-              class="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-400 outline-none"
-            />
-          </div>
-
-          <!-- الهاتف -->
-          <div class="flex flex-col">
-            <label for="phone" class="mb-1 font-medium text-gray-700"
-              >رقم الهاتف</label
-            >
-            <input
-              id="phone"
-              type="tel"
-              class="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-400 outline-none"
-            />
-          </div>
-
-          <!-- البريد الإلكتروني -->
-          <div class="col-span-2 flex flex-col">
-            <label for="email" class="mb-1 font-medium text-gray-700"
-              >البريد الإلكتروني</label
-            >
-            <input
-              id="email"
-              type="email"
-              class="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-400 outline-none"
-            />
-          </div>
-
-          <!-- الحالة العائلية -->
-          <div class="flex flex-col">
-            <label for="familySituation" class="mb-1 font-medium text-gray-700"
-              >الحالة العائلية</label
-            >
-            <select
-              id="familySituation"
-              class="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-400 outline-none"
-            >
-              <option value="">-- اختر --</option>
-              <option>أعزب</option>
-              <option>متزوج</option>
-              <option>مطلق</option>
-              <option>أرمل</option>
-            </select>
-          </div>
-
-          <!-- عدد الأطفال -->
-          <div class="flex flex-col">
-            <label for="numberOfChildren" class="mb-1 font-medium text-gray-700"
-              >عدد الأطفال</label
-            >
-            <input
-              id="numberOfChildren"
-              type="number"
-              min="0"
-              class="border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-400 outline-none"
-            />
-          </div>
-
-          <!-- العنوان -->
-          <div class="col-span-2 flex flex-col">
-            <label for="addressLine" class="mb-1 font-medium text-gray-700"
-              >العنوان الكامل</label
-            >
-            <textarea
-              id="addressLine"
-              class="border rounded-lg px-3 py-2 h-24 resize-none focus:ring-2 focus:ring-blue-400 outline-none"
-            ></textarea>
-          </div>
-
-          <!-- 📁 الوثائق المرفقة -->
-          <div class="col-span-2 mt-6 border-t pt-4">
-            <h4 class="text-lg font-semibold text-gray-700 mb-2">
-              📎 الوثائق المقدمة
-            </h4>
+        <form id="candidateForm" class="w-full" novalidate>
+          <!-- مؤشرات الخطوات -->
+          <div class="flex justify-center mb-6 gap-4">
             <div
-              class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-sm text-gray-700"
+              id="step1Indicator"
+              class="px-4 py-2 bg-blue-600 text-white rounded-lg"
             >
-              <label class="flex items-center gap-2"
+              1) المعلومات الأساسية
+            </div>
+            <div
+              id="step2Indicator"
+              class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg"
+            >
+              2) الوثائق
+            </div>
+          </div>
+
+          <!-- ================= STEP 1 ================= -->
+          <div id="step1">
+            <div class="grid grid-cols-2 gap-4">
+              <div class="flex flex-col">
+                <label class="mb-1 font-medium">الاسم *</label>
+                <input id="firstName" class="border rounded-lg px-3 py-2" />
+              </div>
+
+              <div class="flex flex-col">
+                <label class="mb-1 font-medium">اللقب *</label>
+                <input id="lastName" class="border rounded-lg px-3 py-2" />
+              </div>
+
+              <div class="flex flex-col">
+                <label class="mb-1 font-medium">الجنس</label>
+                <select id="sex" class="border rounded-lg px-3 py-2">
+                  <option value="">-- اختر --</option>
+                  <option value="man">ذكر</option>
+                  <option value="woman">أنثى</option>
+                </select>
+              </div>
+
+              <div class="flex flex-col">
+                <label class="mb-1 font-medium">تاريخ الميلاد</label>
+                <input
+                  type="date"
+                  id="birthDate"
+                  class="border rounded-lg px-3 py-2"
+                />
+              </div>
+
+              <div class="flex flex-col">
+                <label class="mb-1 font-medium">مكان الميلاد</label>
+                <input id="placeOfBirth" class="border rounded-lg px-3 py-2" />
+              </div>
+
+              <div class="flex flex-col">
+                <label class="mb-1 font-medium">الهاتف</label>
+                <input id="phone" class="border rounded-lg px-3 py-2" />
+              </div>
+
+              <div class="col-span-2 flex flex-col">
+                <label class="mb-1 font-medium">البريد الإلكتروني</label>
+                <input id="email" class="border rounded-lg px-3 py-2" />
+              </div>
+
+              <div class="flex flex-col">
+                <label class="mb-1 font-medium">الحالة العائلية</label>
+                <select
+                  id="familySituation"
+                  class="border rounded-lg px-3 py-2"
+                >
+                  <option value="">-- اختر --</option>
+                  <option value="single">أعزب</option>
+                  <option value="married">متزوج</option>
+                  <option value="divorced">مطلق</option>
+                  <option value="widowed">أرمل</option>
+                </select>
+              </div>
+
+              <div class="flex flex-col">
+                <label class="mb-1 font-medium">عدد الأطفال</label>
+                <input
+                  id="numberOfChildren"
+                  type="number"
+                  class="border rounded-lg px-3 py-2"
+                />
+              </div>
+
+              <div class="col-span-2 flex flex-col">
+                <label class="mb-1 font-medium">العنوان الكامل</label>
+                <textarea
+                  id="addressLine"
+                  class="border rounded-lg px-3 py-2 h-20"
+                ></textarea>
+              </div>
+            </div>
+
+            <!-- NEXT -->
+            <div class="text-left mt-6">
+              <button
+                type="button"
+                id="nextBtn"
+                class="bg-blue-600 text-white px-6 py-2 rounded-lg"
+              >
+                التالي ➤
+              </button>
+            </div>
+          </div>
+
+          <!-- ================= STEP 2 ================= -->
+          <div id="step2" class="hidden">
+            <h4 class="text-lg font-semibold mb-3">📎 الوثائق المقدمة</h4>
+
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+              <label
                 ><input type="checkbox" id="demande_ecrite" /> طلب خطي</label
               >
-              <label class="flex items-center gap-2"
-                ><input type="checkbox" id="copyOfID" /> نسخة من بطاقة
-                الهوية</label
-              >
-              <label class="flex items-center gap-2"
-                ><input type="checkbox" id="diplome" /> الشهادة</label
-              >
-              <label class="flex items-center gap-2"
+              <label><input type="checkbox" id="copyOfID" /> نسخة بطاقة</label>
+              <label><input type="checkbox" id="diplome" /> الشهادة</label>
+              <label
                 ><input type="checkbox" id="releve_notes" /> كشف النقاط</label
               >
-              <label class="flex items-center gap-2"
+              <label
                 ><input type="checkbox" id="certificat_service" /> شهادة
                 الخدمة</label
               >
-              <label class="flex items-center gap-2"
-                ><input type="checkbox" id="photos" /> صور شمسية</label
-              >
-              <label class="flex items-center gap-2"
-                ><input type="checkbox" id="enveloppes" /> أظرفة</label
-              >
-              <label class="flex items-center gap-2"
+              <label><input type="checkbox" id="photos" /> صور شمسية</label>
+              <label><input type="checkbox" id="enveloppes" /> أظرفة</label>
+              <label
                 ><input type="checkbox" id="attestations_travail" /> شهادات
-                العمل</label
+                عمل</label
               >
             </div>
 
             <div class="mt-3">
-              <label
-                for="autres_pieces"
-                class="block text-sm text-gray-700 mb-1"
-                >وثائق أخرى (إن وجدت)</label
-              >
+              <label class="font-medium">وثائق أخرى</label>
               <textarea
                 id="autres_pieces"
-                class="border rounded-lg px-3 py-2 w-full h-20 resize-none focus:ring-2 focus:ring-blue-400 outline-none"
+                class="border rounded-lg px-3 py-2 w-full h-20"
               ></textarea>
             </div>
-          </div>
 
-          <!-- زر الحفظ -->
-          <div class="col-span-2 text-left mt-4">
-            <button
-              type="button"
-              id="saveCandidateBtn"
-              class="bg-green-600 text-white px-6 py-2 rounded-lg shadow hover:bg-green-700 transition"
-            >
-              💾 حفظ المترشح
-            </button>
+            <!-- PREV + SAVE -->
+            <div class="flex justify-between mt-6">
+              <button
+                type="button"
+                id="prevBtn"
+                class="px-6 py-2 bg-gray-500 text-white rounded-lg"
+              >
+                ◀ رجوع
+              </button>
+
+              <button
+                type="submit"
+                id="saveCandidateBtn"
+                class="px-6 py-2 bg-green-600 text-white rounded-lg"
+              >
+                💾 حفظ المترشح
+              </button>
+            </div>
           </div>
         </form>
       </div>
     </div>
 
-    <!-- ✅ تذييل -->
+    <!-- toast بسيط -->
+    <div
+      id="toast"
+      class="fixed bottom-6 left-6 hidden bg-black/80 text-white px-4 py-2 rounded-lg shadow"
+    ></div>
+
     <footer class="text-center text-gray-500 text-sm py-6 mt-10">
       © 2025 - نظام إدارة المترشحين
     </footer>

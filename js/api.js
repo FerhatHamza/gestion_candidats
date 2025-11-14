@@ -19,7 +19,7 @@ export async function apiRequest(endpoint, method = "GET", data = null) {
 
     if (data) options.body = JSON.stringify(data);
 
-    console.log(`➡️ API ${method} ${endpoint}`, data || "");
+    // console.log(`➡️ API ${method} ${endpoint}`, data || "");
     try {
         const response = await fetch(url, options);
 
