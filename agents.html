@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="ar" dir="rtl">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Gestion des Agents</title>
+    <title>إدارة الأعوان</title>
     <script src="https://cdn.tailwindcss.com"></script>
   </head>
 
@@ -13,12 +13,12 @@
       <div
         class="max-w-6xl mx-auto flex justify-between items-center py-4 px-6"
       >
-        <h1 class="text-2xl font-bold">👨‍💼 Gestion des Agents</h1>
-        <nav class="space-x-6">
-          <a href="candidats.html" class="hover:text-blue-200">Candidats</a>
-          <a href="agents.html" class="font-semibold border-b-2 border-white"
-            >Agents</a
-          >
+        <h1 class="text-2xl font-bold">👨‍💼 إدارة الأعوان</h1>
+        <nav class="space-x-6 space-x-reverse">
+          <a href="candidats.html" class="hover:text-blue-200">المترشحون</a>
+          <a href="agents.html" class="font-semibold border-b-2 border-white">
+            الأعوان
+          </a>
         </nav>
       </div>
     </header>
@@ -26,59 +26,125 @@
     <main class="max-w-6xl mx-auto mt-8 space-y-10">
       <!-- Liste des agents -->
       <section class="bg-white p-6 rounded-lg shadow-md">
-        <h2 class="text-xl font-semibold mb-4">Liste des Agents</h2>
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-xl font-semibold">قائمة الأعوان</h2>
+
+          <!-- زر إضافة عون جديد -->
+          <button
+            id="openModel"
+            class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+          >
+            ➕ إضافة عون
+          </button>
+        </div>
+
         <table class="w-full text-sm border border-gray-200">
           <thead class="bg-blue-600 text-white">
             <tr>
-              <th class="px-4 py-2 text-left">Nom</th>
-              <th class="px-4 py-2 text-left">Utilisateur</th>
-              <th class="px-4 py-2 text-left">Rôle</th>
+              <th class="px-4 py-2 text-right">الرقم</th>
+              <th class="px-4 py-2 text-right">الاسم</th>
+              <th class="px-4 py-2 text-right">اسم المستخدم</th>
+              <th class="px-4 py-2 text-right">الدور</th>
+              <th class="px-4 py-2 text-right">العمليات</th>
             </tr>
           </thead>
-          <tbody>
-            <tr class="border-b hover:bg-gray-50">
-              <td class="px-4 py-2">Ferhat Hamza</td>
-              <td class="px-4 py-2">admin</td>
-              <td class="px-4 py-2">Administrateur</td>
-            </tr>
-            <tr class="border-b hover:bg-gray-50">
-              <td class="px-4 py-2">Ait Ahmed Rania</td>
-              <td class="px-4 py-2">rania.a</td>
-              <td class="px-4 py-2">Agent</td>
-            </tr>
-          </tbody>
+          <tbody id="tbodyAgents"></tbody>
         </table>
       </section>
 
       <!-- Logs -->
       <section class="bg-white p-6 rounded-lg shadow-md">
-        <h2 class="text-xl font-semibold mb-4">Journal des opérations</h2>
+        <h2 class="text-xl font-semibold mb-4">سجل العمليات</h2>
         <table class="w-full text-sm border border-gray-200">
           <thead class="bg-gray-700 text-white">
             <tr>
-              <th class="px-4 py-2 text-left">Date</th>
-              <th class="px-4 py-2 text-left">Agent</th>
-              <th class="px-4 py-2 text-left">Action</th>
+              <th class="px-4 py-2 text-right">التاريخ</th>
+              <th class="px-4 py-2 text-right">العيـن</th>
+              <th class="px-4 py-2 text-right">العملية</th>
             </tr>
           </thead>
           <tbody>
             <tr class="border-b hover:bg-gray-50">
               <td class="px-4 py-2">2025-11-12 14:22</td>
               <td class="px-4 py-2">admin</td>
-              <td class="px-4 py-2 text-green-600">Ajout d’un candidat</td>
+              <td class="px-4 py-2 text-green-600">إضافة مترشح</td>
             </tr>
             <tr class="border-b hover:bg-gray-50">
               <td class="px-4 py-2">2025-11-12 15:10</td>
               <td class="px-4 py-2">rania.a</td>
-              <td class="px-4 py-2 text-red-600">Suppression d’un dossier</td>
+              <td class="px-4 py-2 text-red-600">حذف ملف</td>
             </tr>
           </tbody>
         </table>
       </section>
     </main>
 
+    <!-- Modal -->
+    <div
+      id="agentAddModal"
+      class="hidden fixed inset-0 bg-black/40 flex items-center justify-center"
+    >
+      <div class="bg-white w-96 p-6 rounded-xl shadow-xl">
+        <h2 id="modalTitle" class="text-xl font-bold mb-4">إضافة عون</h2>
+
+        <!-- Form -->
+        <div class="space-y-3">
+          <div>
+            <label class="text-sm">الاسم الكامل</label>
+            <input
+              id="agentName"
+              class="w-full p-2 border rounded-lg"
+              type="text"
+            />
+          </div>
+
+          <div>
+            <label class="text-sm">اسم المستخدم</label>
+            <input
+              id="agentUsername"
+              class="w-full p-2 border rounded-lg"
+              type="text"
+            />
+          </div>
+
+          <div>
+            <label class="text-sm">كلمة المرور</label>
+            <input
+              id="agentPassword"
+              class="w-full p-2 border rounded-lg"
+              type="password"
+            />
+          </div>
+
+          <div>
+            <label class="text-sm">الدور</label>
+            <select id="agentRole" class="w-full p-2 border rounded-lg">
+              <option value="admin">مدير</option>
+              <option value="agent">عون</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex justify-end gap-3 mt-5">
+          <button id="closeAddAgent" class="px-3 py-2 border rounded-lg">
+            إلغاء
+          </button>
+
+          <button
+            id="saveAgent"
+            class="px-4 py-2 bg-blue-700 text-white rounded-lg"
+          >
+            حفظ
+          </button>
+        </div>
+      </div>
+    </div>
+
     <footer class="text-center text-gray-500 text-sm py-6 mt-10">
-      © 2025 - Gestion des Agents et Journaux
+      © 2025 - إدارة الأعوان والسجلات
     </footer>
+
+    <script type="module" src="./js/agents.js"></script>
   </body>
 </html>

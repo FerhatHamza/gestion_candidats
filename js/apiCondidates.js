@@ -2,7 +2,7 @@ import { apiRequest } from './api.js';
 
 
 export async function getCandidats() {
-    return await apiRequest("/candidates", "GET");
+    return await apiRequest("/allCandidatesWithDocs", "GET");
 }
 
 

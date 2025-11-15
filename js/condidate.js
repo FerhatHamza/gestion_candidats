@@ -49,6 +49,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const deleteBtn = document.getElementById('deleteBtn');
     const closeDeleteModel = document.getElementById('closeDeleteModel');
 
+
+    const step1 = document.getElementById("step1");
+    const step2 = document.getElementById("step2");
+
+    const step1Indicator = document.getElementById("step1Indicator");
+    const step2Indicator = document.getElementById("step2Indicator");
     let editingId = null; // إذا كان في تعديل
 
 
@@ -64,12 +70,16 @@ document.addEventListener("DOMContentLoaded", () => {
         if (closeModalBtn) closeModalBtn.addEventListener('click', hideAddModal);
         if (modalOverlay) modalOverlay.addEventListener('click', hideAddModal);
 
-        if (form) {
-            form.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                await onSaveCandidate();
-            });
-        }
+        // if (form) {
+        //     form.addEventListener('submit', async (e) => {
+        //         e.preventDefault();
+        //         await onSaveCandidate();
+        //     });
+        // }
+
+        saveBtn.addEventListener('click', async (e) => {
+            await onSaveCandidate();
+        });
 
         if (tableBody) {
             tableBody.addEventListener('click', (e) => {
@@ -90,12 +100,6 @@ document.addEventListener("DOMContentLoaded", () => {
     initSteps();
 
     function initSteps() {
-        const step1 = document.getElementById("step1");
-        const step2 = document.getElementById("step2");
-
-        const step1Indicator = document.getElementById("step1Indicator");
-        const step2Indicator = document.getElementById("step2Indicator");
-
         document.getElementById("nextBtn").addEventListener("click", () => {
 
             if (!firstNameInput.value.trim()) return alert("أدخل الاسم");
@@ -129,8 +133,9 @@ document.addEventListener("DOMContentLoaded", () => {
     async function getAllCandidats() {
         try {
             const candidates = await getCandidats();
-            const doc = await getDocumentsById(candidates.id);
-            fillTable(candidates || [], doc);
+            console.log('Loaded candidates:', candidates);
+            // const doc = await getDocumentsById(candidates.id);
+            fillTable(candidates || []);
         } catch (err) {
             console.error('Error fetching candidates:', err);
             showToast('خطأ في تحميل المترشحين');
@@ -138,7 +143,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // عرض الجدول
-    function fillTable(candidates, doc) {
+    function fillTable(candidates) {
 
         tableBody.innerHTML = '';
         if (!candidates.length) {
@@ -147,9 +152,8 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         candidates.forEach((candidate) => {
-            const docRow = doc.find(d => d.candidate_id === candidate.id);
-
-            const docsSummary = renderDocsSummary([docRow]);
+            const docsSummary = renderDocsSummary(candidate.documents);
+            // console.log('Candidate docs summary:', candidate);
             const sexLabel = candidate.sex === 'man' ? 'ذكر' : candidate.sex === 'woman' ? 'أنثى' : '';
             const row = document.createElement('tr');
             row.classList.add('border-b', 'hover:bg-gray-50');
@@ -168,15 +172,20 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    function renderDocsSummary(docs) {
-        if (!docs || !docs[0]) return '';
+    function renderDocsSummary(docsArray) {
+        if (!docsArray || !docsArray.length) return '';
 
-        // Get only fields with value = 0
-        const onlyZeros = Object.entries(docs[0])
+        // Extract the first document object
+        const docs = docsArray[0];
+
+
+        // Pick only value = 0
+        const onlyZeros = Object.entries(docs)
             .filter(([key, value]) => value === 0)
             .map(([key]) => key);
 
-        // Labels you care about
+        console.log('Docs array for summary:', onlyZeros);
+
         const labels = {
             attestations_travail: 'شهادة العمل',
             demande_ecrite: 'طلب خطي',
@@ -185,13 +194,12 @@ document.addEventListener("DOMContentLoaded", () => {
             releve_notes: 'كشف النقاط',
             certificat_service: 'الخدمة الوطنية',
             photos: 'صور',
-            enveloppes: 'أضرفة',
+            enveloppes: 'أضرفة'
         };
 
-        // Return only the labels for fields that are zero
         const parts = onlyZeros
-            .filter(key => labels[key])        // keep only known keys
-            .map(key => labels[key]);          // convert to Arabic label
+            .filter(key => labels[key])
+            .map(key => labels[key]);
 
         return parts.join(' · ');
     }
@@ -238,7 +246,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             // الآن نضيف وثائق إذا وجد التابع addDocuments
             const docsPayload = {
-                candidate_id: parseInt(editingId),
+                candidate_id: editingId === null ? saved.id : parseInt(editingId),
                 demande_ecrite: demande_ecrite.checked ? 1 : 0,
                 copyOfID: copyOfID.checked ? 1 : 0,
                 diplome: diplome.checked ? 1 : 0,
@@ -251,10 +259,10 @@ document.addEventListener("DOMContentLoaded", () => {
             };
             //console.log('Docs payload:', docsPayload);
             if (editingId) {
-                //console.log('1');
+                console.log('documents payload for update: ', docsPayload);
                 saved = await updateDocuments(editingId, docsPayload);
             } else {
-                //console.log('4');
+                console.log('documents payload for add: ', docsPayload);
                 saved = await addDocuments(docsPayload);
             }
 
@@ -359,6 +367,7 @@ document.addEventListener("DOMContentLoaded", () => {
         setTimeout(() => firstNameInput.focus(), 120);
     }
     function hideAddModal() {
+        resetForm();
         modelAddEdit.classList.add('hidden');
         editingId = null;
     }
@@ -381,6 +390,14 @@ document.addEventListener("DOMContentLoaded", () => {
         sexInput.value = '';
         familySituationInput.value = '';
         numberOfChildrenInput.value = '';
+        step2.classList.add("hidden");
+        step1.classList.remove("hidden");
+
+        step2Indicator.classList.remove("bg-blue-600", "text-white");
+        step2Indicator.classList.add("bg-gray-300", "text-gray-700");
+
+        step1Indicator.classList.remove("bg-gray-300", "text-gray-700");
+        step1Indicator.classList.add("bg-blue-600", "text-white");
     }
 
     // toast صغير
