@@ -26,9 +26,24 @@ export async function addCandidat(candidateData) {
     });
 }
 
+export async function candidateWithDocs(id) {
+    return await apiRequest(`/candidateWithDocs/${id}`, "GET");
+}
+
 
 export async function updateCandidat(id, candidateData) {
-    return await apiRequest(`/candidates/${id}`, "PUT", candidateData);
+    return await apiRequest(`/candidates/${id}`, "PUT", {
+        firstName: candidateData.firstName,
+        lastName: candidateData.lastName,
+        sex: candidateData.sex,
+        birthDate: candidateData.birthDate,
+        placeOfBirth: candidateData.placeOfBirth,
+        addressLine: candidateData.addressLine,
+        phone: candidateData.phone,
+        email: candidateData.email,
+        familySituation: candidateData.familySituation,
+        numberOfChildren: candidateData.numberOfChildren,
+    });
 }
 
 

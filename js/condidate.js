@@ -3,13 +3,14 @@ import {
     getCandidats,
     addCandidat,
     getCandidatById,
-
+    candidateWithDocs,
     deleteCandidat,    // تأكد من وجوده
     updateCandidat     // اختياري لمهمة التعديل
 } from './apiCondidates.js';
 import {
     addDocuments,
     getDocumentsById,
+    updateDocuments,
 } from './apiDocuments.js';
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -43,6 +44,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const btnAdd = document.getElementById('btnAdd');
     const closeModalBtn = document.getElementById('closeModal');
     const toast = document.getElementById('toast');
+    const modelDeleteEdit = document.getElementById('deleteModal');
+    const confirmText = document.getElementById('confirmText');
+    const deleteBtn = document.getElementById('deleteBtn');
+    const closeDeleteModel = document.getElementById('closeDeleteModel');
 
     let editingId = null; // إذا كان في تعديل
 
@@ -51,6 +56,7 @@ document.addEventListener("DOMContentLoaded", () => {
     function init() {
         bindUI();
         getAllCandidats();
+
     }
 
     function bindUI() {
@@ -71,7 +77,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (!btn) return;
                 const candidateId = btn.dataset.id;
                 if (btn.classList.contains('delete')) {
-                    onDeleteCandidate(candidateId);
+                    // onDeleteCandidate(candidateId);
+                    showDeleteModal(candidateId);
                 } else if (btn.classList.contains('edit')) {
                     onEditCandidate(candidateId);
                 }
@@ -132,7 +139,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // عرض الجدول
     function fillTable(candidates, doc) {
-        console.log('Documents fetched:', doc);
+
         tableBody.innerHTML = '';
         if (!candidates.length) {
             tableBody.innerHTML = `<tr><td colspan="6" class="px-4 py-6 text-center text-gray-500">لا توجد بيانات</td></tr>`;
@@ -147,16 +154,16 @@ document.addEventListener("DOMContentLoaded", () => {
             const row = document.createElement('tr');
             row.classList.add('border-b', 'hover:bg-gray-50');
             row.innerHTML = `
-      <td class="px-4 py-3">${escapeHtml(candidate.firstName || '')}</td>
-      <td class="px-4 py-3">${escapeHtml(candidate.lastName || '')}</td>
-      <td class="px-4 py-3">${sexLabel}</td>
-      <td class="px-4 py-3">${escapeHtml(candidate.phone || '')}</td>
-      <td class="px-4 py-3 text-sm">${docsSummary}</td>
-      <td class="px-4 py-3 text-center space-x-2">
-        <button data-id="${candidate.id}" class="edit inline-block px-3 py-1 rounded hover:bg-gray-100">✏️ تعديل</button>
-        <button data-id="${candidate.id}" class="delete inline-block px-3 py-1 rounded text-red-600 hover:bg-gray-100">🗑️ حذف</button>
-      </td>
-    `;
+                <td class="px-4 py-3">${escapeHtml(candidate.firstName || '')}</td>
+                <td class="px-4 py-3">${escapeHtml(candidate.lastName || '')}</td>
+                <td class="px-4 py-3">${sexLabel}</td>
+                <td class="px-4 py-3">${escapeHtml(candidate.phone || '')}</td>
+                <td class="px-4 py-3 text-sm">${docsSummary}</td>
+                <td class="px-4 py-3 text-center space-x-2">
+                    <button data-id="${candidate.id}" class="edit inline-block px-3 py-1 rounded hover:bg-gray-100">✏️ تعديل</button>
+                    <button data-id="${candidate.id}" class="delete inline-block px-3 py-1 rounded text-red-600 hover:bg-gray-100">🗑️ حذف</button>
+                </td>
+            `;
             tableBody.appendChild(row);
         });
     }
@@ -171,12 +178,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Labels you care about
         const labels = {
+            attestations_travail: 'شهادة العمل',
             demande_ecrite: 'طلب خطي',
             copyOfID: 'نسخة من بطاقة التعريف',
             diplome: 'الشهادة',
             releve_notes: 'كشف النقاط',
             certificat_service: 'الخدمة الوطنية',
             photos: 'صور',
+            enveloppes: 'أضرفة',
         };
 
         // Return only the labels for fields that are zero
@@ -208,6 +217,8 @@ document.addEventListener("DOMContentLoaded", () => {
             numberOfChildren: numberOfChildrenInput.value ? Number(numberOfChildrenInput.value) : 0,
         };
 
+        //console.log('Candidate payload:', payload);
+        //console.log('editing id:', editingId);
         try {
             showToast('جارٍ الحفظ...');
             let saved;
@@ -224,9 +235,10 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
 
+
             // الآن نضيف وثائق إذا وجد التابع addDocuments
             const docsPayload = {
-                candidate_id: saved.id,
+                candidate_id: parseInt(editingId),
                 demande_ecrite: demande_ecrite.checked ? 1 : 0,
                 copyOfID: copyOfID.checked ? 1 : 0,
                 diplome: diplome.checked ? 1 : 0,
@@ -237,11 +249,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 attestations_travail: attestations_travail.checked ? 1 : 0,
                 autres_pieces: autres_pieces.value.trim() || null
             };
-            console.log('Docs payload:', docsPayload);
-            if (typeof addDocuments === 'function') {
-                await addDocuments(docsPayload);
+            //console.log('Docs payload:', docsPayload);
+            if (editingId) {
+                //console.log('1');
+                saved = await updateDocuments(editingId, docsPayload);
             } else {
-                console.warn('addDocuments() غير موجود في apiCondidates.js — تخطّي إضافة الوثائق');
+                //console.log('4');
+                saved = await addDocuments(docsPayload);
             }
 
             showToast('تم الحفظ بنجاح');
@@ -256,28 +270,41 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // حذف مترشح (تأكيد)
-    async function onDeleteCandidate(id) {
-        const ok = confirm('هل أنت متأكد أنك تريد حذف هذا المترشح؟');
-        if (!ok) return;
-        try {
-            if (typeof deleteCandidat === 'function') {
-                await deleteCandidat(id);
+    async function onDeleteCandidate() {
+
+        if (confirmText.value === 'DELETE') {
+            try {
+                await deleteCandidat(editingId);
                 showToast('تم الحذف');
+                hideDeleteModal();
                 await getAllCandidats();
-            } else {
-                console.warn('deleteCandidat() غير موجود في apiCondidates.js — لا شيء تم حذفه فعليًا');
-                showToast('وظيفة الحذف غير مفعلة');
+            } catch (err) {
+                console.error('خطأ عند الحذف:', err);
+                showToast('حدث خطأ أثناء الحذف');
             }
-        } catch (err) {
-            console.error('خطأ عند الحذف:', err);
-            showToast('حدث خطأ أثناء الحذف');
         }
+        // const ok = confirm('هل أنت متأكد أنك تريد حذف هذا المترشح؟');
+        // if (!ok) return;
+        // try {
+        //     if (typeof deleteCandidat === 'function') {
+        //         await deleteCandidat(id);
+        //         showToast('تم الحذف');
+        //         await getAllCandidats();
+        //     } else {
+        //         console.warn('deleteCandidat() غير موجود في apiCondidates.js — لا شيء تم حذفه فعليًا');
+        //         showToast('وظيفة الحذف غير مفعلة');
+        //     }
+        // } catch (err) {
+        //     console.error('خطأ عند الحذف:', err);
+        //     showToast('حدث خطأ أثناء الحذف');
+        // }
     }
 
     // تحرير — يعبئ النموذج بالبيانات ويعرض المودال
     async function onEditCandidate(id) {
         try {
-            const candidate = await getCandidatById(id);
+            const candidate = await candidateWithDocs(id);
+            //console.log('Candidate for edit:', candidate);
             if (!candidate) {
                 showToast('المترشح غير موجود');
                 return;
@@ -296,15 +323,15 @@ document.addEventListener("DOMContentLoaded", () => {
             numberOfChildrenInput.value = candidate.numberOfChildren || '';
 
             // وثائق (إذا كانت مضمنة في candidate.documents)
-            const docs = candidate.documents || {};
-            demande_ecrite.checked = !!docs.demande_ecrite;
-            copyOfID.checked = !!docs.copyOfID;
-            diplome.checked = !!docs.diplome;
-            releve_notes.checked = !!docs.releve_notes;
-            certificat_service.checked = !!docs.certificat_service;
-            photos.checked = !!docs.photos;
-            enveloppes.checked = !!docs.enveloppes;
-            attestations_travail.checked = !!docs.attestations_travail;
+            const docs = candidate.documents[0] || {};
+            demande_ecrite.checked = !!docs.demande_ecrite == 1 ? true : false;
+            copyOfID.checked = !!docs.copyOfID == 1 ? true : false;
+            diplome.checked = !!docs.diplome == 1 ? true : false;
+            releve_notes.checked = !!docs.releve_notes == 1 ? true : false;
+            certificat_service.checked = !!docs.certificat_service == 1 ? true : false;
+            photos.checked = !!docs.photos == 1 ? true : false;
+            enveloppes.checked = !!docs.enveloppes == 1 ? true : false;
+            attestations_travail.checked = !!docs.attestations_travail == 1 ? true : false;
             autres_pieces.value = docs.autres_pieces || '';
 
             showAddModal();
@@ -314,6 +341,17 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+    deleteBtn.addEventListener('click', onDeleteCandidate);
+    closeDeleteModel.addEventListener('click', hideDeleteModal);
+    confirmText.addEventListener('input', () => {
+        if (confirmText.value === 'DELETE') {
+            deleteBtn.disabled = false;
+            deleteBtn.classList.remove('opacity-50');
+        } else {
+            deleteBtn.disabled = true;
+            deleteBtn.classList.add('opacity-50');
+        }
+    });
     // عرض / إخفاء modal
     function showAddModal() {
         modelAddEdit.classList.remove('hidden');
@@ -322,6 +360,17 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     function hideAddModal() {
         modelAddEdit.classList.add('hidden');
+        editingId = null;
+    }
+    // عرض / إخفاء modal
+    function showDeleteModal(id) {
+        editingId = id;
+        modelDeleteEdit.classList.remove('hidden');
+        // تمرير التركيز للحقل الأول
+        setTimeout(() => confirmText.focus(), 120);
+    }
+    function hideDeleteModal() {
+        modelDeleteEdit.classList.add('hidden');
         editingId = null;
     }
 
@@ -356,5 +405,8 @@ document.addEventListener("DOMContentLoaded", () => {
         };
         return String(text || '').replace(/[&<>"']/g, function (m) { return map[m]; });
     }
+
+
+
 
 });

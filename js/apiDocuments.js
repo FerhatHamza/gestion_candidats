@@ -28,7 +28,18 @@ export async function addDocuments(DocumentseData) {
 
 
 export async function updateDocuments(id, DocumentseData) {
-    return await apiRequest(`/documents/${id}`, "PUT", DocumentseData);
+    return await apiRequest(`/documents/update`, "PUT", {
+        candidate_id: id,
+        demande_ecrite: DocumentseData.demande_ecrite,
+        copyOfID: DocumentseData.copyOfID,
+        diplome: DocumentseData.diplome,
+        releve_notes: DocumentseData.releve_notes,
+        certificat_service: DocumentseData.certificat_service,
+        photos: DocumentseData.photos,
+        enveloppes: DocumentseData.enveloppes,
+        attestations_travail: DocumentseData.attestations_travail,
+        autres_pieces: DocumentseData.autres_pieces
+    });
 }
 
 
