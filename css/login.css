@@ -1,0 +1,99 @@
+body {
+        font-family: "Tajawal", sans-serif;
+        background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+        height: 100vh;
+        margin: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .login-card {
+        background: #fff;
+        width: 360px;
+        padding: 35px;
+        border-radius: 18px;
+        text-align: center;
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18);
+        animation: fadeIn 0.5s;
+      }
+
+      .logo {
+        width: 80px;
+        margin-bottom: 10px;
+        opacity: 0.85;
+      }
+
+      h2 {
+        color: #1e40af;
+        margin-bottom: 5px;
+        font-weight: 700;
+      }
+
+      p {
+        color: #666;
+        margin-bottom: 25px;
+        font-size: 14px;
+      }
+
+      .form-group {
+        text-align: right;
+        margin-bottom: 18px;
+      }
+
+      .form-group label {
+        font-size: 14px;
+        font-weight: 600;
+        color: #333;
+      }
+
+      .form-group input {
+        width: 100%;
+        padding: 12px;
+        margin-top: 6px;
+        border-radius: 10px;
+        border: 1px solid #ccc;
+        transition: 0.2s;
+        font-size: 15px;
+      }
+
+      .form-group input:focus {
+        border-color: #1e40af;
+        box-shadow: 0 0 5px rgba(30, 64, 175, 0.3);
+        outline: none;
+      }
+
+      button {
+        width: 100%;
+        padding: 12px;
+        background: #1e40af;
+        color: white;
+        border: none;
+        border-radius: 10px;
+        font-size: 17px;
+        cursor: pointer;
+        margin-top: 15px;
+        font-weight: 600;
+        transition: 0.25s;
+      }
+
+      button:hover {
+        background: #1e3a8a;
+      }
+
+      .footer {
+        margin-top: 25px;
+        font-size: 13px;
+        color: #777;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }

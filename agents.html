@@ -5,29 +5,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>إدارة الأعوان</title>
     <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="stylesheet" href="./css/header.css" />
   </head>
 
   <body class="bg-gray-100 text-gray-800">
     <!-- Navbar -->
-    <header class="bg-blue-700 text-white shadow-md">
-      <div
-        class="max-w-6xl mx-auto flex justify-between items-center py-4 px-6"
-      >
-        <h1 class="text-2xl font-bold">👨‍💼 إدارة الأعوان</h1>
-        <nav class="space-x-6 space-x-reverse">
-          <a href="candidats.html" class="hover:text-blue-200">المترشحون</a>
-          <a href="agents.html" class="font-semibold border-b-2 border-white">
-            الأعوان
-          </a>
-        </nav>
+    <header class="top-header">
+      <div class="right">
+        <!-- <img src="logo.png" class="h-logo" /> -->
+        <span class="title">نظام إدارة المترشحين</span>
+      </div>
+
+      <nav id="adminOnly" class="hidden nav-links">
+        <a href="candidats.html" class="nav-item" id="nav-agents">المترشحين</a>
+      </nav>
+
+      <div class="left">
+        <span id="currentUser" class="user"></span>
+        <button id="logoutBtn" class="logout">تسجيل الخروج</button>
       </div>
     </header>
+
+    <style></style>
 
     <main class="max-w-6xl mx-auto mt-8 space-y-10">
       <!-- Liste des agents -->
       <section class="bg-white p-6 rounded-lg shadow-md">
         <div class="flex items-center justify-between mb-4">
-          <h2 class="text-xl font-semibold">قائمة الأعوان</h2>
+          <h2 class="text-xl font-semibold">قائمة المستخدمون</h2>
 
           <!-- زر إضافة عون جديد -->
           <button
@@ -59,22 +65,11 @@
           <thead class="bg-gray-700 text-white">
             <tr>
               <th class="px-4 py-2 text-right">التاريخ</th>
-              <th class="px-4 py-2 text-right">العيـن</th>
+              <th class="px-4 py-2 text-right">المستخدم</th>
               <th class="px-4 py-2 text-right">العملية</th>
             </tr>
           </thead>
-          <tbody>
-            <tr class="border-b hover:bg-gray-50">
-              <td class="px-4 py-2">2025-11-12 14:22</td>
-              <td class="px-4 py-2">admin</td>
-              <td class="px-4 py-2 text-green-600">إضافة مترشح</td>
-            </tr>
-            <tr class="border-b hover:bg-gray-50">
-              <td class="px-4 py-2">2025-11-12 15:10</td>
-              <td class="px-4 py-2">rania.a</td>
-              <td class="px-4 py-2 text-red-600">حذف ملف</td>
-            </tr>
-          </tbody>
+          <tbody id="tbodyLog"></tbody>
         </table>
       </section>
     </main>
@@ -141,10 +136,51 @@
       </div>
     </div>
 
+    <!-- Modal -->
+    <div
+      id="deleteModal"
+      class="hidden fixed inset-0 bg-black/40 flex items-center justify-center"
+    >
+      <div class="bg-white w-96 p-6 rounded-xl shadow-xl">
+        <h2 class="text-xl font-semibold mb-3 text-red-600">تأكيد الحذف</h2>
+        <p class="text-gray-700 mb-4">
+          هل أنت متأكد من أنك تريد حذف هذا العنصر؟ هذا الإجراء لا يمكن التراجع
+          عنه.
+        </p>
+
+        <!-- Input like GitHub -->
+        <label class="text-sm text-gray-600 mb-1 block"
+          >اكتب: <strong>DELETE</strong></label
+        >
+        <input
+          id="confirmText"
+          type="text"
+          class="w-full p-2 border rounded-lg mb-4"
+          placeholder="اكتب DELETE للتأكيد"
+        />
+
+        <div class="flex justify-end gap-3">
+          <button id="closeDeleteModel" class="px-3 py-2 rounded-lg border">
+            إلغاء
+          </button>
+
+          <button
+            id="deleteBtn"
+            disabled
+            class="px-4 py-2 bg-red-600 text-white rounded-lg opacity-50"
+          >
+            حذف نهائيًا
+          </button>
+        </div>
+      </div>
+    </div>
+
     <footer class="text-center text-gray-500 text-sm py-6 mt-10">
       © 2025 - إدارة الأعوان والسجلات
     </footer>
 
+    <script type="module" src="./js/controll.js"></script>
+    <script type="module" src="./js/log.js"></script>
     <script type="module" src="./js/agents.js"></script>
   </body>
 </html>

@@ -35,3 +35,14 @@ export async function updateAgensts(id, AgenstseData) {
 export async function deleteAgensts(id) {
     return await apiRequest(`/agents/${id}`, "DELETE");
 }
+
+/* -------------------------
+      🔐 Login Function
+-------------------------- */
+
+export async function loginAgent(username, password) {
+    return await apiRequest("/login", "POST", {
+        username: username,
+        password: password
+    });
+}

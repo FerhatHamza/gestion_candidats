@@ -1,0 +1,51 @@
+.top-header {
+        background: #1e40af;
+        color: white;
+        padding: 12px 25px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-family: "Tajawal";
+      }
+
+      .right {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+
+      .h-logo {
+        width: 42px;
+        opacity: 0.95;
+      }
+
+      .title {
+        font-size: 20px;
+        font-weight: 700;
+      }
+
+      .left {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+
+      .user {
+        font-size: 15px;
+        font-weight: 600;
+      }
+
+      .logout {
+        background: #dc2626;
+        border: none;
+        padding: 8px 13px;
+        color: white;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: 0.2s;
+      }
+
+      .logout:hover {
+        background: #b91c1c;
+      }

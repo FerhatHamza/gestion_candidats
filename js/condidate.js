@@ -13,6 +13,8 @@ import {
     updateDocuments,
 } from './apiDocuments.js';
 
+import { addLog } from './apiLog.js';
+
 document.addEventListener("DOMContentLoaded", () => {
     const form = document.getElementById('candidateForm');
     const saveBtn = document.getElementById('saveCandidateBtn');
@@ -70,12 +72,17 @@ document.addEventListener("DOMContentLoaded", () => {
         if (closeModalBtn) closeModalBtn.addEventListener('click', hideAddModal);
         if (modalOverlay) modalOverlay.addEventListener('click', hideAddModal);
 
-        // if (form) {
-        //     form.addEventListener('submit', async (e) => {
-        //         e.preventDefault();
-        //         await onSaveCandidate();
-        //     });
-        // }
+        deleteBtn.addEventListener('click', onDeleteCandidate);
+        closeDeleteModel.addEventListener('click', hideDeleteModal);
+        confirmText.addEventListener('input', () => {
+            if (confirmText.value === 'DELETE') {
+                deleteBtn.disabled = false;
+                deleteBtn.classList.remove('opacity-50');
+            } else {
+                deleteBtn.disabled = true;
+                deleteBtn.classList.add('opacity-50');
+            }
+        });
 
         saveBtn.addEventListener('click', async (e) => {
             await onSaveCandidate();
@@ -133,7 +140,7 @@ document.addEventListener("DOMContentLoaded", () => {
     async function getAllCandidats() {
         try {
             const candidates = await getCandidats();
-            console.log('Loaded candidates:', candidates);
+            // console.log('Loaded candidates:', candidates);
             // const doc = await getDocumentsById(candidates.id);
             fillTable(candidates || []);
         } catch (err) {
@@ -153,7 +160,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
         candidates.forEach((candidate) => {
             const docsSummary = renderDocsSummary(candidate.documents);
-            // console.log('Candidate docs summary:', candidate);
+            // console.log('Candidate docs summary:', docsSummary);
+
             const sexLabel = candidate.sex === 'man' ? 'ذكر' : candidate.sex === 'woman' ? 'أنثى' : '';
             const row = document.createElement('tr');
             row.classList.add('border-b', 'hover:bg-gray-50');
@@ -162,7 +170,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 <td class="px-4 py-3">${escapeHtml(candidate.lastName || '')}</td>
                 <td class="px-4 py-3">${sexLabel}</td>
                 <td class="px-4 py-3">${escapeHtml(candidate.phone || '')}</td>
-                <td class="px-4 py-3 text-sm">${docsSummary}</td>
+                <td class="px-4 py-3 text-sm font-bold ${docsSummary === 'لا وثائق مفقودة' ? 'text-green-800' : 'text-red-500'}">${docsSummary}</td>
                 <td class="px-4 py-3 text-center space-x-2">
                     <button data-id="${candidate.id}" class="edit inline-block px-3 py-1 rounded hover:bg-gray-100">✏️ تعديل</button>
                     <button data-id="${candidate.id}" class="delete inline-block px-3 py-1 rounded text-red-600 hover:bg-gray-100">🗑️ حذف</button>
@@ -184,7 +192,7 @@ document.addEventListener("DOMContentLoaded", () => {
             .filter(([key, value]) => value === 0)
             .map(([key]) => key);
 
-        console.log('Docs array for summary:', onlyZeros);
+        // console.log('Docs array for summary:', onlyZeros);
 
         const labels = {
             attestations_travail: 'شهادة العمل',
@@ -201,6 +209,7 @@ document.addEventListener("DOMContentLoaded", () => {
             .filter(key => labels[key])
             .map(key => labels[key]);
 
+        if (parts.length === 0) return 'لا وثائق مفقودة';
         return parts.join(' · ');
     }
 
@@ -230,18 +239,33 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
             showToast('جارٍ الحفظ...');
             let saved;
+            let log;
             if (editingId) {
+
                 // تحديث - إذا كان updateCandidat موجود
                 if (typeof updateCandidat === 'function') {
-                    saved = await updateCandidat(editingId, payload);
+                    saved = await updateCandidat(editingId, payload).then(async (response) => {
+                        const log = await addLog({
+                            agent_id: localStorage.getItem("agent_id"),
+                            candidate_id: editingId,
+                            action: 'modify'
+                        });
+                    });
+
                 } else {
                     // fallback: call addCandidat as create then mark as editingId (not ideal)
-                    saved = await addCandidat(payload);
+                    saved = await addCandidat(payload).then(async (response) => {
+                        const log = await addLog({
+                            agent_id: localStorage.getItem("agent_id"),
+                            candidate_id: response.id,
+                            action: 'modify'
+                        });
+                    });
                 }
+
             } else {
                 saved = await addCandidat(payload);
             }
-
 
 
             // الآن نضيف وثائق إذا وجد التابع addDocuments
@@ -259,10 +283,10 @@ document.addEventListener("DOMContentLoaded", () => {
             };
             //console.log('Docs payload:', docsPayload);
             if (editingId) {
-                console.log('documents payload for update: ', docsPayload);
+                // console.log('documents payload for update: ', docsPayload);
                 saved = await updateDocuments(editingId, docsPayload);
             } else {
-                console.log('documents payload for add: ', docsPayload);
+                // console.log('documents payload for add: ', docsPayload);
                 saved = await addDocuments(docsPayload);
             }
 
@@ -283,6 +307,11 @@ document.addEventListener("DOMContentLoaded", () => {
         if (confirmText.value === 'DELETE') {
             try {
                 await deleteCandidat(editingId);
+                const log = await addLog({
+                    agent_id: localStorage.getItem('agent_id'),
+                    candidate_id: editingId,
+                    action: 'delete'
+                });
                 showToast('تم الحذف');
                 hideDeleteModal();
                 await getAllCandidats();
@@ -291,21 +320,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 showToast('حدث خطأ أثناء الحذف');
             }
         }
-        // const ok = confirm('هل أنت متأكد أنك تريد حذف هذا المترشح؟');
-        // if (!ok) return;
-        // try {
-        //     if (typeof deleteCandidat === 'function') {
-        //         await deleteCandidat(id);
-        //         showToast('تم الحذف');
-        //         await getAllCandidats();
-        //     } else {
-        //         console.warn('deleteCandidat() غير موجود في apiCondidates.js — لا شيء تم حذفه فعليًا');
-        //         showToast('وظيفة الحذف غير مفعلة');
-        //     }
-        // } catch (err) {
-        //     console.error('خطأ عند الحذف:', err);
-        //     showToast('حدث خطأ أثناء الحذف');
-        // }
     }
 
     // تحرير — يعبئ النموذج بالبيانات ويعرض المودال
@@ -349,17 +363,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    deleteBtn.addEventListener('click', onDeleteCandidate);
-    closeDeleteModel.addEventListener('click', hideDeleteModal);
-    confirmText.addEventListener('input', () => {
-        if (confirmText.value === 'DELETE') {
-            deleteBtn.disabled = false;
-            deleteBtn.classList.remove('opacity-50');
-        } else {
-            deleteBtn.disabled = true;
-            deleteBtn.classList.add('opacity-50');
-        }
-    });
+
     // عرض / إخفاء modal
     function showAddModal() {
         modelAddEdit.classList.remove('hidden');

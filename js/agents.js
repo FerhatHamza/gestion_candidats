@@ -16,6 +16,10 @@ const closeAddAgent = document.getElementById("closeAddAgent");
 const saveAgent = document.getElementById("saveAgent");
 const tbodyAgents = document.getElementById("tbodyAgents");
 const openModel = document.getElementById("openModel");
+const deleteModal = document.getElementById("deleteModal");
+const deleteBtn = document.getElementById("deleteBtn");
+const closeDeleteModel = document.getElementById("closeDeleteModel");
+const confirmText = document.getElementById("confirmText");
 
 var editAgentId = null;
 
@@ -34,6 +38,17 @@ function bindUI() {
     if (closeAddAgent) closeAddAgent.addEventListener("click", closeAgentAddModal);
     if (saveAgent) saveAgent.addEventListener("click", saveAgentData);
     if (openModel) openModel.addEventListener("click", openAgentAddModal);
+    if (closeDeleteModel) closeDeleteModel.addEventListener("click", openDeleteModal);
+    if (deleteBtn) deleteBtn.addEventListener("click", deleteAgent);
+    if (confirmText) confirmText.addEventListener('input', () => {
+        if (confirmText.value === 'DELETE') {
+            deleteBtn.disabled = false;
+            deleteBtn.classList.remove('opacity-50');
+        } else {
+            deleteBtn.disabled = true;
+            deleteBtn.classList.add('opacity-50');
+        }
+    });
 
     if (tbodyAgents) {
         tbodyAgents.addEventListener('click', (e) => {
@@ -41,20 +56,50 @@ function bindUI() {
             if (!btn) return;
             editAgentId = btn.dataset.id;
             if (btn.classList.contains('delete')) {
-                console.log("Deleting agent with ID:", editAgentId);
-                openAgentAddModal();
+                // console.log("Deleting agent with ID:", editAgentId);
+                openDeleteModal();
             } else if (btn.classList.contains('edit')) {
-                console.log("editing agent with ID:", editAgentId);
-                closeAgentAddModal();
+                // console.log("editing agent with ID:", editAgentId);
+                fillEditModel(editAgentId);
             }
             init();
         });
     }
 }
 
+function deleteAgent() {
+    console.log("Deleting agent");
+    if (!editAgentId) return;
+    console.log("Deleting agent with ID:", editAgentId);
+    console.log("confirmText:", confirmText.value);
+    if (confirmText.value !== 'DELETE') return;
+    deleteAgensts(editAgentId).then(() => {
+        closeDeleteModal();
+        loadAgents();
+        editAgentId = null;
+    }).catch((error) => {
+        console.error("Error deleting agent:", error);
+    });
+}
 
+function fillEditModel(id) {
+    getAgenstsById(id).then(agentData => {
+        agentNameInput.value = agentData.nom;
+        agentUsernameInput.value = agentData.username;
+        agentPasswordInput.value = agentData.password_hash;
+        agentRoleInput.value = agentData.role;
+    });
+    openAgentAddModal();
+}
 
-
+// Open modal
+function openDeleteModal() {
+    deleteModal.classList.remove("hidden");
+}
+// Close modal
+function closeDeleteModal() {
+    deleteModal.classList.add("hidden");
+}
 // Open modal
 function openAgentAddModal() {
     agentAddModal.classList.remove("hidden");
@@ -74,7 +119,12 @@ async function saveAgentData() {
         role: agentRoleInput.value
     };
     try {
-        await addAgensts(agentData);
+        if (editAgentId) {
+            await updateAgensts(editAgentId, agentData);
+            editAgentId = null; // reset after editing
+        } else {
+            await addAgensts(agentData);
+        }
         closeAgentAddModal();
         loadAgents();
     } catch (error) {

@@ -44,6 +44,7 @@ export async function updateCandidat(id, candidateData) {
         familySituation: candidateData.familySituation,
         numberOfChildren: candidateData.numberOfChildren,
     });
+
 }
 
 

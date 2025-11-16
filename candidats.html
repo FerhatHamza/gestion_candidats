@@ -4,49 +4,55 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>إدارة المترشحين</title>
+
     <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="stylesheet" href="./css/header.css" />
     <style>
       body {
         font-family: "Tajawal", "Cairo", sans-serif;
       }
     </style>
+
     <link
       href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap"
       rel="stylesheet"
     />
   </head>
 
-  <body class="bg-gray-100 text-gray-800">
-    <!-- شريط علوي -->
-    <header
-      class="bg-gradient-to-l from-blue-800 to-blue-600 text-white shadow-lg"
-    >
-      <div
-        class="max-w-6xl mx-auto flex justify-between items-center py-4 px-6"
-      >
-        <h1 class="text-2xl font-bold flex items-center gap-2">
-          🧾 نظام إدارة المترشحين
-        </h1>
-        <nav class="flex gap-6 text-lg">
-          <a
-            href="candidats.html"
-            class="font-semibold border-b-2 border-white pb-1"
-            >المترشحون</a
-          >
-          <a href="agents.html" class="hover:text-blue-200">المستخدمون</a>
-        </nav>
+  <body class="bg-gray-50 text-gray-900">
+    <!-- الشريط العلوي -->
+    <header class="top-header">
+      <div class="right">
+        <!-- <img src="logo.png" class="h-logo" /> -->
+        <span class="title">نظام إدارة المترشحين</span>
+      </div>
+
+      <nav id="adminOnly" class="hidden nav-links">
+        <a href="agents.html" class="nav-item" id="nav-agents">المستخدمون</a>
+      </nav>
+
+      <div class="left">
+        <span id="currentUser" class="user">vdsvs</span>
+        <button id="logoutBtn" class="logout">تسجيل الخروج</button>
       </div>
     </header>
 
-    <!-- small card how all condidate with number of missing documents -->
-    <div id="summaryCard"></div>
+    <!-- البطاقة العليا (ملخص) -->
+    <div id="summaryCard" class="max-w-7xl mx-auto mt-6 px-4"></div>
+
     <!-- المحتوى الرئيسي -->
-    <main class="max-w-6xl mx-auto mt-10 px-4">
+    <main class="max-w-7xl mx-auto mt-10 px-4">
       <div class="flex justify-between mb-6 items-center">
-        <h2 class="text-2xl font-semibold text-gray-700">📋 قائمة المترشحين</h2>
+        <h2
+          class="text-2xl font-semibold text-gray-700 flex items-center gap-2"
+        >
+          📋 قائمة المترشحين
+        </h2>
+
         <button
           id="btnAdd"
-          class="bg-blue-600 text-white px-5 py-2 rounded-lg cursor-pointer shadow hover:bg-blue-700 transition"
+          class="bg-blue-700 text-white px-6 py-2 rounded-xl shadow hover:bg-blue-800 transition font-medium"
         >
           ➕ إضافة مترشح
         </button>
@@ -54,10 +60,10 @@
 
       <!-- جدول المترشحين -->
       <div
-        class="bg-white rounded-xl shadow-md overflow-x-auto border border-gray-200"
+        class="bg-white rounded-2xl shadow border border-gray-200 overflow-hidden"
       >
         <table class="w-full text-sm">
-          <thead class="bg-blue-600 text-white">
+          <thead class="bg-blue-700 text-white">
             <tr>
               <th class="px-4 py-3 text-right">الاسم</th>
               <th class="px-4 py-3 text-right">اللقب</th>
@@ -68,60 +74,67 @@
             </tr>
           </thead>
           <tbody id="candidatesTableBody" class="divide-y divide-gray-100">
-            <!-- سيتم ملء الجدول عبر JS -->
+            <!-- Filled via JS -->
           </tbody>
         </table>
       </div>
     </main>
 
-    <!-- Modal (مغلق افتراضياً) -->
+    <!-- Modal -->
     <div id="modelAddEdit" class="fixed inset-0 z-50 hidden">
-      <!-- overlay -->
-      <div id="modalOverlay" class="absolute inset-0 bg-black/40"></div>
-
-      <!-- dialog -->
       <div
-        class="relative max-w-3xl mx-auto mt-14 bg-white rounded-2xl shadow-xl p-6 border border-gray-200 z-10"
+        id="modalOverlay"
+        class="absolute inset-0 bg-black/40 backdrop-blur-sm"
+      ></div>
+
+      <div
+        class="relative max-w-3xl mx-auto mt-20 bg-white rounded-2xl shadow-2xl p-8 border border-gray-200 z-10"
       >
         <button
           id="closeModal"
-          class="absolute left-4 top-4 text-gray-500 hover:text-red-600 text-2xl"
+          class="absolute left-4 top-4 text-gray-500 hover:text-red-600 text-3xl"
         >
           &times;
         </button>
 
-        <h3 class="text-xl font-semibold mb-4 text-gray-700 border-b pb-2">
+        <h3 class="text-xl font-semibold mb-5 text-gray-700 border-b pb-3">
           🧍‍♂️ إضافة / تعديل مترشح
         </h3>
 
-        <form id="candidateForm" class="w-full" novalidate>
-          <!-- مؤشرات الخطوات -->
-          <div class="flex justify-center mb-6 gap-4">
+        <form id="candidateForm" novalidate class="space-y-6">
+          <!-- Steps -->
+          <div class="flex justify-center gap-4">
             <div
               id="step1Indicator"
-              class="px-4 py-2 bg-blue-600 text-white rounded-lg"
+              class="px-5 py-2 bg-blue-700 text-white rounded-lg shadow font-medium"
             >
               1) المعلومات الأساسية
             </div>
             <div
               id="step2Indicator"
-              class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg"
+              class="px-5 py-2 bg-gray-200 text-gray-700 rounded-lg shadow"
             >
               2) الوثائق
             </div>
           </div>
 
-          <!-- ================= STEP 1 ================= -->
+          <!-- Step 1 -->
           <div id="step1">
             <div class="grid grid-cols-2 gap-4">
               <div class="flex flex-col">
                 <label class="mb-1 font-medium">الاسم *</label>
-                <input id="firstName" class="border rounded-lg px-3 py-2" />
+                <input
+                  id="firstName"
+                  class="border rounded-lg px-3 py-2 focus:ring focus:ring-blue-200"
+                />
               </div>
 
               <div class="flex flex-col">
                 <label class="mb-1 font-medium">اللقب *</label>
-                <input id="lastName" class="border rounded-lg px-3 py-2" />
+                <input
+                  id="lastName"
+                  class="border rounded-lg px-3 py-2 focus:ring focus:ring-blue-200"
+                />
               </div>
 
               <div class="flex flex-col">
@@ -189,23 +202,22 @@
               </div>
             </div>
 
-            <!-- NEXT -->
             <div class="text-left mt-6">
               <button
                 type="button"
                 id="nextBtn"
-                class="bg-blue-600 text-white px-6 py-2 rounded-lg"
+                class="bg-blue-700 text-white px-6 py-2 rounded-lg"
               >
                 التالي ➤
               </button>
             </div>
           </div>
 
-          <!-- ================= STEP 2 ================= -->
+          <!-- Step 2 -->
           <div id="step2" class="hidden">
             <h4 class="text-lg font-semibold mb-3">📎 الوثائق المقدمة</h4>
 
-            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-sm">
               <label
                 ><input type="checkbox" id="demande_ecrite" /> طلب خطي</label
               >
@@ -226,7 +238,7 @@
               >
             </div>
 
-            <div class="mt-3">
+            <div class="mt-4">
               <label class="font-medium">وثائق أخرى</label>
               <textarea
                 id="autres_pieces"
@@ -234,12 +246,11 @@
               ></textarea>
             </div>
 
-            <!-- PREV + SAVE -->
             <div class="flex justify-between mt-6">
               <button
                 type="button"
                 id="prevBtn"
-                class="px-6 py-2 bg-gray-500 text-white rounded-lg"
+                class="px-6 py-2 bg-gray-600 text-white rounded-lg"
               >
                 ◀ رجوع
               </button>
@@ -257,13 +268,13 @@
       </div>
     </div>
 
-    <!-- toast بسيط -->
+    <!-- Toast -->
     <div
       id="toast"
-      class="fixed bottom-6 left-6 hidden bg-black/80 text-white px-4 py-2 rounded-lg shadow"
+      class="fixed bottom-6 left-6 hidden bg-black/90 text-white px-4 py-2 rounded-lg shadow-lg"
     ></div>
 
-    <!-- Modal -->
+    <!-- Delete Modal -->
     <div
       id="deleteModal"
       class="hidden fixed inset-0 bg-black/40 flex items-center justify-center"
@@ -275,8 +286,7 @@
           عنه.
         </p>
 
-        <!-- Input like GitHub -->
-        <label class="text-sm text-gray-600 mb-1 block"
+        <label class="text-sm text-gray-700 mb-1 block"
           >اكتب: <strong>DELETE</strong></label
         >
         <input
@@ -302,10 +312,11 @@
       </div>
     </div>
 
-    <footer class="text-center text-gray-500 text-sm py-6 mt-10">
+    <footer class="text-center text-gray-500 text-sm py-8 mt-16">
       © 2025 - نظام إدارة المترشحين
     </footer>
 
+    <script type="module" src="./js/controll.js"></script>
     <script type="module" src="./js/condidate.js"></script>
   </body>
 </html>
